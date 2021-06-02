@@ -1,0 +1,119 @@
+.header {
+  color: #fff;
+  &-bg {
+    width: 100%;
+  }
+  &-container {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    // box-sizing: border-box;
+    padding: 0 20px;
+    //   top: env(safe-area-inset-top);
+    //   top: constant(safe-area-inset-top);
+  }
+  &-info {
+    text-align: center;
+    &__explain {
+      // font-size: 24px;
+      margin: 20px;
+    }
+    &__text {
+      font-size: 40px;
+      font-weight: 600;
+      margin-bottom: 40px;
+    }
+  }
+  &-title {
+    text-align: center;
+    line-height: 80px;
+    font-weight: 600;
+    font-size: 36px;
+    // margin-bottom: 10px;
+  }
+}
+.content {
+  &-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    margin: -60px 0 20px;
+  }
+  &-item {
+    background: #fff;
+    border-radius: 20px;
+    flex-basis: 47.5%;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px;
+    box-sizing: border-box;
+    &-info {
+      &-title {
+        font-weight: 600;
+        font-size: 32px;
+        color: $global-black;
+        margin-bottom: 10px;
+      }
+      &-num {
+        font-size: 28px;
+        font-weight: 600;
+        color: $global-red;
+      }
+    }
+    &-icon {
+      width: 64px;
+      height: 64px;
+    }
+  }
+}
+.menu {
+  &-container {
+    // padding: 0 30px;
+    background: #fff;
+  }
+  &-title {
+    line-height: 100px;
+    font-weight: 600;
+    padding: 0 30px;
+    background: #f3f3f3;
+  }
+  &-item {
+    display: flex;
+    height: 100px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    color: $global-black;
+    font-size: 28px;
+    &:not(:last-child) {
+      border-bottom: 2px solid $global-line-gray;
+    }
+    &-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 20px;
+    }
+    &-title {
+      flex: 1;
+    }
+  }
+}
+.page-btn {
+  position: fixed;
+  width: 400px;
+  height: 80px;
+  line-height: 80px;
+  border-radius: 40px;
+  left: 50%;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 600;
+  bottom: 60px;
+  text-align: center;
+  transform: translateX(-50%);
+  background: $global-green;
+}

@@ -1,0 +1,66 @@
+{
+  "setting": {},
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/checkout/index",
+          "pathName": "pages/checkout/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/manager/order/detail/index",
+          "pathName": "pages/manager/order/detail/index",
+          "query": "id=1",
+          "scene": null
+        },
+        {
+          "name": "pages/manager/finance/detail/index",
+          "pathName": "pages/manager/finance/detail/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/statistics/revenue/index",
+          "pathName": "pages/statistics/revenue/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/statistics/goods/index",
+          "pathName": "pages/statistics/goods/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/center/index",
+          "pathName": "pages/center/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/print/index/index",
+          "pathName": "pages/print/index/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/member/index",
+          "pathName": "pages/member/index",
+          "query": "",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

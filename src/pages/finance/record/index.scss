@@ -1,0 +1,37 @@
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #fff;
+  &:not(:last-child) {
+    border-bottom: 2px solid $global-line-gray;
+  }
+  &__left {
+    &-title {
+      color: $global-black;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    &-date {
+      color: $global-text-gray;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+    &-desc {
+      color: $global-text-gray;
+      font-size: 24px;
+    }
+  }
+  &__right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    &-price {
+      color: $global-black;
+      font-weight: 600;
+    }
+    &-status {
+      color: $global-red;
+    }
+  }
+}
