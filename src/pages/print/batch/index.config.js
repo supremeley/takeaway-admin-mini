@@ -1,4 +1,3 @@
 export default {
-  navigationBarTitleText: '我的',
-  navigationStyle: 'custom'
+  navigationBarTitleText: '批量打印',
 }

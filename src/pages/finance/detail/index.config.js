@@ -1,4 +1,4 @@
 export default {
-  navigationBarTitleText: '提现记录'
+  navigationBarTitleText: '资金明细'
   // navigationStyle: 'custom'
 }

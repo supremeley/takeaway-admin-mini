@@ -1,107 +1,278 @@
 import Taro from '@tarojs/taro'
 import { Component } from 'react'
-import { View, Image } from '@tarojs/components'
+import { View, Picker } from '@tarojs/components'
+import TimeSelector from '@/components/timeSelector'
 
-import headerBg from '@/assets/imgs/header-bg.png'
-import CaiwuIcon from '@/assets/imgs/center-caiwu.png'
-import JinyingIcon from '@/assets/imgs/center-jinying.png'
-import PrintIcon from '@/assets/imgs/center-print.png'
-import OrderIcon from '@/assets/imgs/center-order.png'
-import AreaIcon from '@/assets/imgs/center-area.png'
-import MemberIcon from '@/assets/imgs/center-member.png'
-import UsIcon from '@/assets/imgs/center-us.png'
+// import headerBg from '@/assets/imgs/header-bg.png'
+// import exchangeIcon from '@/assets/imgs/center-exchange.png'
+// import usIcon from '@/assets/imgs/center-us.png'
 
+import api from '@/api'
+import D from '@/common'
 import './index.scss'
 
 class Center extends Component {
   state = {
-    menuList: [
-      {
-        icon: CaiwuIcon,
-        title: '财务结算',
-        url: '/pages/manager/finance/index'
-      },
-      {
-        icon: JinyingIcon,
-        title: '经营数据',
-        url: '/pages/manager/statistics/index'
-      },
-      {
-        icon: PrintIcon,
-        title: '打印设置'
-      },
-      {
-        icon: OrderIcon,
-        title: '订单审核'
-      },
-      {
-        icon: AreaIcon,
-        title: '负责区域'
-      },
-      {
-        icon: MemberIcon,
-        title: '团队人员'
-      },
-      {
-        icon: UsIcon,
-        title: '消息'
-      }
-    ]
+    current: '',
+    schoolList: [],
+    floorList: []
   }
 
-  onJump = (url) => () => {
-    Taro.navigateTo({ url })
+  componentDidMount() {
+    this.getSchoolList()
+    this.getManagerSchoolList()
   }
 
-  onJumpToCoupon = () => {
-    Taro.navigateTo({ url: `/pages/coupon/list/index` })
+  changeSchool = (e) => {
+    // console.log(e)
+    const { schoolList } = this.state
+
+    const current = schoolList[e.detail.value].name
+
+    this.setState({ current })
+  }
+
+  getSchoolList = async () => {
+    // const { recordList } = this.state
+
+    // const orderStatus = navList[current].status
+    const userTypeDesc = Taro.getStorageSync('userTypeDesc')
+
+    const { brandId, userId } = Taro.getStorageSync('userInfo')
+
+    // let resultApi,
+    //   query = { ...params, mobile: '', endTime: '', startTime: '', status: 1 }
+
+    // switch (userTypeDesc) {
+    //   case 'shop': // 商户端
+    //     resultApi = api.finance.GET_SHOP_BILL_LIST
+    //     query.brandId = brandId
+    //     break
+    //   case 'manager':
+    //     resultApi = api.finance.GET_USER_BILL_LIST
+    //     query.type = 0
+    //     query.userId = userId
+    //     break
+    // }
+
+    // Taro.showLoading({
+    //   title: '加载中',
+    //   icon: 'none'
+    // })
+
+    const query = {
+      type: 4,
+      relationId: brandId
+    }
+
+    const {
+      data: { items = [] }
+    } = await api.common.GET_SCHOOL_LIST(query)
+    // console.log(data, count, 1000)
+    // debugger
+    let nList = items.map((item) => {
+      // let num = 0
+      // const goodsInfo = item.goodsList.map((goods) => {
+      //   num += goods.number
+      //   return goods.goodsName
+      // })
+      // // console.log(goodsInfo)
+      // return {
+      //   ...item,
+      //   goodsInfo: goodsInfo.join('+'),
+      //   goodsExplain: ` 等${num}件商品`
+      // }
+      return item
+    })
+
+    // nList = [...recordList, ...nList]
+
+    // Taro.hideLoading()
+
+    this.setState({ schoolList: nList })
+  }
+
+  getManagerSchoolList = async () => {
+    // const { recordList } = this.state
+
+    // const orderStatus = navList[current].status
+    const userTypeDesc = Taro.getStorageSync('userTypeDesc')
+
+    const { brandId, userId } = Taro.getStorageSync('userInfo')
+
+    // let resultApi,
+    //   query = { ...params, mobile: '', endTime: '', startTime: '', status: 1 }
+
+    // switch (userTypeDesc) {
+    //   case 'shop': // 商户端
+    //     resultApi = api.finance.GET_SHOP_BILL_LIST
+    //     query.brandId = brandId
+    //     break
+    //   case 'manager':
+    //     resultApi = api.finance.GET_USER_BILL_LIST
+    //     query.type = 0
+    //     query.userId = userId
+    //     break
+    // }
+
+    // Taro.showLoading({
+    //   title: '加载中',
+    //   icon: 'none'
+    // })
+
+    const query = {
+      type: 1,
+      adminId: userId
+    }
+
+    const {
+      data: { items = [] }
+    } = await api.common.GET_SCHOOL_LIST(query)
+    // console.log(data, count, 1000)
+    // debugger
+    let nList = items.map((item) => {
+      // let num = 0
+      // const goodsInfo = item.goodsList.map((goods) => {
+      //   num += goods.number
+      //   return goods.goodsName
+      // })
+      // // console.log(goodsInfo)
+      // return {
+      //   ...item,
+      //   goodsInfo: goodsInfo.join('+'),
+      //   goodsExplain: ` 等${num}件商品`
+      // }
+      return item
+    })
+
+    // nList = [...recordList, ...nList]
+
+    // Taro.hideLoading()
+
+    this.setState({ schoolList: nList })
+  }
+
+  getFloorList = async () => {
+    // const { recordList } = this.state
+
+    // const orderStatus = navList[current].status
+    const userTypeDesc = Taro.getStorageSync('userTypeDesc')
+
+    const { brandId, userId } = Taro.getStorageSync('userInfo')
+
+    // let resultApi,
+    //   query = { ...params, mobile: '', endTime: '', startTime: '', status: 1 }
+
+    // switch (userTypeDesc) {
+    //   case 'shop': // 商户端
+    //     resultApi = api.finance.GET_SHOP_BILL_LIST
+    //     query.brandId = brandId
+    //     break
+    //   case 'manager':
+    //     resultApi = api.finance.GET_USER_BILL_LIST
+    //     query.type = 0
+    //     query.userId = userId
+    //     break
+    // }
+
+    // Taro.showLoading({
+    //   title: '加载中',
+    //   icon: 'none'
+    // })
+
+    const query = {
+      brandId
+    }
+
+    const {
+      data: { items = [] }
+    } = await api.order.GET_FLOORLIST(query)
+    // console.log(data, count, 1000)
+    // debugger
+    let nList = items.map((item) => {
+      // let num = 0
+      // const goodsInfo = item.goodsList.map((goods) => {
+      //   num += goods.number
+      //   return goods.goodsName
+      // })
+      // // console.log(goodsInfo)
+      // return {
+      //   ...item,
+      //   goodsInfo: goodsInfo.join('+'),
+      //   goodsExplain: ` 等${num}件商品`
+      // }
+      return item
+    })
+
+    // nList = [...recordList, ...nList]
+
+    // Taro.hideLoading()
+
+    this.setState({ floorList: nList })
+  }
+
+  getPrintList = async () => {
+    const { data } = await api.print.GET_PRINT_LIST()
+
+    this.setState({ printList: data })
+  }
+
+  printOrder = (id) => async () => {
+    const { printList } = this.state
+    const { brandId, userId } = Taro.getStorageSync('userInfo')
+
+    if (!printList.length) {
+      D.toast('请先添加打印机')
+      return
+    }
+
+    const query = { brandId, buildingId: id, sn: printList[0].sn }
+
+    const { errno } = await api.print.FETCH_PRINT(query)
+
+    if (!errno) {
+      D.toast('打印成功')
+    }
   }
 
   render() {
-    const { menuList } = this.state
+    const { current, schoolList, floorList } = this.state
 
     return (
       <View className='index'>
-        <View className='header'>
-          <Image src={headerBg} mode='widthFix' className='header-bg'></Image>
-          <View className='header-container'>
-            <View className='header-title'>我的</View>
-            <View className='header-info'>
-              <View>
-                <View className='header-info__floor'>薛定谔的波波猫</View>
-                <View className='header-info__school'>今天也要记得吃饭鸭</View>
-              </View>
-              <Image src={UsIcon} mode='aspectFill' className='header-info__avatar'></Image>
-            </View>
+        <View>
+          <View className='plate'>
+            <TimeSelector />
           </View>
-        </View>
-        {/* <View className='content-container'>
-          <View className='content-item'>
-            <View className='content-item-info'>
-              <View className='content-item-info-title'>积分</View>
-              <View className='content-item-info-num'>999</View>
-            </View>
-            <Image src={integralIcon} mode='widthFix' className='content-item-icon'></Image>
+          <View className='plate'>
+            <Picker
+              range={schoolList}
+              mode='selector'
+              range-key='name'
+              onChange={this.changeSchool}
+            >
+              <View className='time-search__date-info'>{current || '请选择学校'}</View>
+            </Picker>
           </View>
-          <View className='content-item' onClick={this.onJumpToCoupon}>
-            <View className='content-item-info'>
-              <View className='content-item-info-title'>优惠券</View>
-              <View className='content-item-info-num'>999</View>
+          {/* <View className='plate-title'>
+            当日总单：1333
+            <View className='plate-explain'>当日总单量：18888</View>
+          </View> */}
+
+          {/* <View className='plate-option'>
+            <View className='plate-option__title'>
+              <View className='plate-option__title-name'>黄焖鸡米饭</View>
+              <View className='plate-option__title-sale'>销量：10</View>
             </View>
-            <Image src={couponIcon} mode='widthFix' className='content-item-icon'></Image>
-          </View>
-        </View> */}
-        <View className='menu-container'>
-          {menuList &&
-            menuList.map((item) => {
-              return (
-                <View key={item.url} className='menu-item' onClick={this.onJump(item.url)}>
-                  <Image src={item.icon} mode='widthFix' className='menu-item-icon'></Image>
-                  <View className='menu-item-title'>{item.title}</View>
-                  <View className='at-icon at-icon-chevron-right'></View>
-                </View>
-              )
-            })}
+            <View className='plate-option__num'>单量：16</View>
+          </View> */}
+          {/* <View className='plate-option'>
+            <View className='plate-option__title'>
+              <View className='plate-option__title-name'>1号楼</View>
+              <View className='plate-option__title-sale'>单量：16</View>
+            </View>
+            <View className='plate-option__btn' onClick={this.printOrder(item.buildingId)}>批量打印</View>
+          </View> */}
         </View>
       </View>
     )

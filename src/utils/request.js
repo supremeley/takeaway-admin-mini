@@ -1,132 +1,134 @@
 import Taro from '@tarojs/taro'
-import qs from 'qs'
+// import qs from 'qs'
+import D from '@/common'
 
-class API {
-  constructor(options = {}) {
-    let { baseURL = '/' } = options
+class Fetch {
+  constructor() {
+    this.baseUrl = 'https://eating.hehezaisheng.com/wx/'
+    this.adminUrl = 'https://admin.hehezaisheng.com/admin/'
+    this.shopUrl = 'https://admin.hehezaisheng.com/merchant/'
 
-    if (!/\/$/.test(baseURL)) {
-      baseURL = baseURL + '/'
+    // this.baseUrl = 'http://shopwx.cn.utools.club/wx/'
+    // this.adminUrl = 'http://shopzz.cn.utools.club/admin/'
+
+    // this.baseUrl = 'http://tianhei.nat300.top/wx/'
+    // this.adminUrl = 'http://thmm.nat300.top/admin/'
+    // this.shopUrl = 'http://thmm.nat300.top/merchant/'
+
+    this.token = ''
+    this.header = {
+      'Content-Type': 'multipart/form-data'
     }
-
-    this.options = options
-    this.baseURL = baseURL
-    this.genMethods(['get', 'post', 'delete', 'put'])
   }
 
-  genMethods(methods) {
-    methods.forEach((method) => {
-      this[method] = (url, data, config = {}) =>
-        this.makeReq({
-          ...config,
-          method,
-          url,
-          data
-        })
+  init = async () => {
+    this.token = await D.getToken()
+  }
+
+  async main(url, method, data, config = {}) {
+    let { header = {}, type = 'base', noToken = false, refreshToken = false } = config
+
+    if ((!noToken && !this.token) || refreshToken) {
+      // Taro.navigateTo({ url: `/pages/login/index` })
+      await this.init()
+    }
+
+    let newUrl = url
+
+    console.log(this.token)
+
+    switch (type) {
+      case 'base':
+        newUrl = this.baseUrl + newUrl
+        header = {
+          ...header,
+          'X-Dts-Token': this.token
+        }
+        break
+      case 'admin':
+        newUrl = this.adminUrl + newUrl
+        header = {
+          ...header,
+          'X-Dts-Admin-Token': this.token
+        }
+        break
+      case 'shop':
+        newUrl = this.shopUrl + newUrl
+        header = {
+          ...header,
+          'X-Dts-Admin-Token': this.token
+        }
+        break
+    }
+
+    return new Promise((res, rej) => {
+      Taro.request({
+        url: newUrl,
+        timeout: 10000,
+        data,
+        method,
+        header,
+        success: (d) => {
+          console.log(d)
+          if (d.statusCode !== 200) {
+            rej(d)
+            D.toast(d.data.errmsg)
+          } else {
+            if (d.data.errno) {
+              if (d.data.errno === 501) {
+                D.login(() => this.main(url, method, data, { refreshToken: true }))
+                // console.log(cb, 'cb')
+                // res(cb)
+                return
+              }
+              D.toast(d.data.errmsg)
+              res(d.data)
+            } else {
+              res(d.data)
+            }
+          }
+        },
+        fail: (e) => {
+          rej(e)
+          // D.toast(e.errMsg)
+        }
+      })
     })
   }
 
-  errorToast(msg) {
-    const errMsg = msg || '操作失败，请稍后重试'
-
-    let newText = ''
-    if (errMsg.length > 11) {
-      newText = errMsg.substring(0, 11) + '\n' + errMsg.substring(11)
-    } else {
-      newText = errMsg
-    }
-    setTimeout(() => {
-      Taro.showToast({
-        icon: 'none',
-        title: newText
+  upload(url, filePath, formData, name = 'file', header = this.header) {
+    return new Promise((res, rej) => {
+      Taro.uploadFile({
+        url: this.adminUrl + url,
+        filePath,
+        name,
+        header: {
+          ...header,
+          'X-Dts-Token': D.getToken()
+        },
+        formData,
+        success: (d) => {
+          if (d.statusCode !== 200) {
+            // rej(d)
+            // D.toast(d.data.error)
+          } else {
+            res(d.data)
+          }
+        },
+        fail: (e) => {
+          D.toast(e.errMsg)
+        }
       })
-    }, 200)
+    })
   }
 
-  async makeReq(config) {
-    let {
-      url,
-      data,
-      header = {},
-      method = 'GET',
-      showLoading,
-      showError = true,
-      getDate,
-      trackData
-    } = config
-    // debugger
-    const methodIsGet = method.toLowerCase() === 'get'
-
-    let apiUrl = /^http/.test(url) ? url : `${this.baseURL}${url.replace(/^\//, '')}`
-    // const query = !data || typeof data === 'string' ? qs.parse(data) : data
-
-    if (!methodIsGet) {
-      header['content-type'] = header['content-type'] || 'application/x-www-form-urlencoded'
-    }
-
-    const options = {
-      ...config,
-      url: apiUrl,
-      method: method.toUpperCase(),
-      data,
-      header
-    }
-
-    if (showLoading) {
-      Taro.showLoading({
-        mask: true
-      })
-    }
-
-    try {
-      const {
-        data: { data: res, errmsg, errno }
-      } = await Taro.request(options)
-
-      if (!res) {
-        this.errorToast(errmsg)
-      } else {
-        return res
-      }
-      // this.reqError(errmsg, errno)
-    } catch (e) {
-      console.log(e)
-      this.reqError(e)
-    }
-
-    // return .then(async (res) => {
-    //   // eslint-disable-next-line
-    //   const { data, statusCode, header, code } = res
-
-    //   if (showLoading) {
-    //     Taro.hideLoading()
-    //   }
-
-    //   console.log('接口：', options.url, '------tid=======', data.tid ? data.tid : '没有tid')
-    //   // if (statusCode >= 200 && statusCode < 300) {
-    //   //   if (data.data !== undefined || _code === 10000) {
-    //   //   } else {
-    //   //   }
-    //   // }
-
-    //   return Promise.reject(this.reqError(res))
-
-    //   return Promise.reject(this.reqError(res, `API error: ${statusCode}`))
-    // })
+  async get(url, data, config, type) {
+    return await this.main(url, 'GET', data, config, type)
   }
 
-  reqError(res, msg = '', noError) {
-    // debugger
-    const data = res.data.error || res.data
-    const errMsg = data.message || data.err_msg || msg
-    const err = noError ? { message: errMsg } : new Error(errMsg)
-    err.res = res
-    return err
+  async post(url, data, config, type) {
+    return await this.main(url, 'POST', data, config, type)
   }
 }
 
-export default new API({
-  baseURL: 'http://121.36.109.180:8083/admin'
-})
-
-export { API }
+export default new Fetch()

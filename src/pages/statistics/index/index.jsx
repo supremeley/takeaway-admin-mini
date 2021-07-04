@@ -29,11 +29,11 @@ class Center extends Component {
       //   title: '账目统计',
       //   url: '/pages/statistics/account/index'
       // },
-      {
-        icon: statisticsAccountDetail,
-        title: '账目明细',
-        url: '/pages/statistics/accountDetail/index'
-      }
+      // {
+      //   icon: statisticsAccountDetail,
+      //   title: '账目明细',
+      //   url: '/pages/statistics/accountDetail/index'
+      // }
     ]
   }
 
@@ -42,7 +42,7 @@ class Center extends Component {
   }
 
   onJumpToCoupon = () => {
-    Taro.navigateTo({ url: `/pages/coupon/list/index` })
+    Taro.navigateTo({ url: `/pages/manager/coupon/list/index` })
   }
 
   render() {

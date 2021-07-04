@@ -21,15 +21,15 @@ class ShopItem extends Component {
     const month = d.getMonth() + 1
     const date = d.getDate()
 
-    const startTime = `${this.addZero(year)}-${this.addZero(month)}-${this.addZero(date)}`
+    const endTime = `${this.addZero(year)}-${this.addZero(month)}-${this.addZero(date)}`
 
-    d.setDate(date + 1)
+    const s = new Date(d.getTime() - 1000 * 60 * 60 * 24)
 
-    const years = d.getFullYear()
-    const months = d.getMonth() + 1
-    const dates = d.getDate()
+    const years = s.getFullYear()
+    const months = s.getMonth() + 1
+    const dates = s.getDate()
 
-    const endTime = `${this.addZero(years)}-${this.addZero(months)}-${this.addZero(dates)}`
+    const startTime = `${this.addZero(years)}-${this.addZero(months)}-${this.addZero(dates)}`
 
     this.setState({ startTime, endTime })
   }

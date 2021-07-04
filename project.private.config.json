@@ -13,20 +13,14 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/checkout/index",
-          "pathName": "pages/checkout/index",
+          "name": "pages/login/index",
+          "pathName": "pages/login/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "pages/manager/order/detail/index",
-          "pathName": "pages/manager/order/detail/index",
-          "query": "id=1",
-          "scene": null
-        },
-        {
-          "name": "pages/manager/finance/detail/index",
-          "pathName": "pages/manager/finance/detail/index",
+          "name": "pages/finance/index/index",
+          "pathName": "pages/finance/index/index",
           "query": "",
           "scene": null
         },
@@ -37,26 +31,8 @@
           "scene": null
         },
         {
-          "name": "pages/statistics/goods/index",
-          "pathName": "pages/statistics/goods/index",
-          "query": "",
-          "scene": null
-        },
-        {
-          "name": "pages/center/index",
-          "pathName": "pages/center/index",
-          "query": "",
-          "scene": null
-        },
-        {
-          "name": "pages/print/index/index",
-          "pathName": "pages/print/index/index",
-          "query": "",
-          "scene": null
-        },
-        {
-          "name": "pages/member/index",
-          "pathName": "pages/member/index",
+          "name": "pages/print/batch/index",
+          "pathName": "pages/print/batch/index",
           "query": "",
           "scene": null
         }

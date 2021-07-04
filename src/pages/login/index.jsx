@@ -3,16 +3,27 @@ import { Component } from 'react'
 import { View, Image, Button } from '@tarojs/components'
 
 import api from '@/api'
+import D from '@/common'
 
-import t1 from '@/assets/imgs/test1.png'
 import headerBg from '@/assets/imgs/header-bg.png'
 
 import './index.scss'
 
 class Login extends Component {
-  state = {}
+  state = {
+    code: ''
+  }
 
-  async componentDidMount() {}
+  async componentDidMount() {
+    // const code = Taro.getStorageSync('code')
+    const { code } = await Taro.login()
+
+    this.setState({ code })
+  }
+
+  goBack = () => {
+    Taro.navigateBack()
+  }
 
   getUserInfo = async () => {
     try {
@@ -35,29 +46,83 @@ class Login extends Component {
   }
 
   handleGetPhoneNumber = async (e) => {
+    const { code } = this.state
     const { errMsg, ...params } = e.detail
 
     if (errMsg === 'getPhoneNumber:ok') {
-      const { cloudID, encryptedData, iv } = params
-      console.log(cloudID, encryptedData, iv)
+      const { encryptedData, iv } = params
+      // console.log(encryptedData, iv)
+      const res = await Taro.checkSession()
+
+      console.log(res)
+
+      // let code
+
+      // if ((res.errMsg = 'checkSession:ok')) {
+      // } else {
+      //   const logRes = await Taro.login()
+      //   code = logRes.code
+      // }
+
+      const query = {
+        code,
+        encryptedData,
+        iv
+      }
+
+      const { data: token, errno } = await api.user.WECHAT_LOGIN(query)
+
+      if (!errno) {
+        D.toast('登录成功')
+        await Taro.setStorageSync('token', token)
+        // Taro.setStorageSync('code', code)
+
+        const {
+          data: { avatar, nickName, perms, roles, type, userId, brandId }
+        } = await api.user.WECHAT_INFO()
+
+        this.typeHandle(type)
+
+        const userInfo = {
+          avatarUrl: avatar,
+          nickName,
+          perms,
+          roles,
+          type,
+          userId,
+          brandId
+        }
+
+        console.log(userInfo)
+
+        Taro.setStorageSync('userInfo', userInfo)
+
+        Taro.switchTab({ url: '/pages/order/list/index' })
+      }
     }
   }
 
-  login = async (userInfo) => {
-    const { code } = await Taro.login()
+  typeHandle = (type) => {
+    // const type = Taro.getStorageSync('userType')
 
-    const {
-      errno,
-      data: { token, userInfo: user }
-    } = await api.user.WECHAT_LOGIN({ code, userInfo })
+    let userTypeDesc = ''
 
-    // console.log(errno, data)
-    Taro.setStorageSync('userInfo', user)
-    Taro.setStorageSync('token', token)
-    Taro.setStorageSync('openid', userInfo.weixinOpenid)
-    Taro.setStorageSync('userId', userInfo.userId)
+    switch (type) {
+      case 1: // 管理端
+        userTypeDesc = 'admin'
+        break
+      case 2: // 商户端
+        userTypeDesc = 'shop'
+        break
+      case 3: // 大学城经理
+      case 4: // 校园经理
+      case 5: // 楼长
+      case 6: // 区域经理
+        userTypeDesc = 'manager'
+        break
+    }
 
-    // Taro.navigateTo()
+    Taro.setStorageSync('userTypeDesc', userTypeDesc)
   }
 
   render() {
@@ -76,21 +141,21 @@ class Login extends Component {
           </View>
         </View>
         <View className='content'>
-          {/* <View>
+          <View>
             <View></View>
             <Button
               type='primary'
               lang='zh_CN'
               openType='getPhoneNumber'
+              class='login-btn'
               onGetPhoneNumber={this.handleGetPhoneNumber}
             >
-              获取手机号
+              授权手机号登录
             </Button>
-          </View> */}
-
-          <Button lang='zh_CN' class='login-btn' onClick={this.getUserInfo}>
+          </View>
+          {/* <Button lang='zh_CN' class='login-btn' onClick={this.getUserInfo}>
             确认登录
-          </Button>
+          </Button> */}
         </View>
       </View>
     )

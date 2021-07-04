@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro'
+import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Component } from 'react'
 import { View, Image, Text, Button, Textarea } from '@tarojs/components'
 
@@ -13,11 +13,55 @@ import './index.scss'
 class OrderDetail extends Component {
   state = {
     info: null,
+    goodsList: [],
     imgList: []
   }
 
-  onConfirm = () => {
-    Taro.navigateTo({ url: 'goods/list' })
+  componentDidShow() {
+    this.getOrderDetail()
+  }
+
+  handleStatus = (status) => {
+    switch (status) {
+      case 101:
+        return '未付款'
+      case 102:
+        return '已取消'
+      case 201:
+        return '已付款'
+      case 202:
+        return '退款中'
+      case 203:
+        return '已退款'
+      case 206:
+        return '打印后已出单'
+      case 301:
+        return '配送中'
+      case 401:
+        return '已收货'
+      case 501:
+        return '申请售后'
+      case 502:
+        return '售后完成'
+      default:
+        return ''
+    }
+  }
+
+  onPhone = () => {
+    const { shopInfo } = this.state
+
+    Taro.makePhoneCall({ phoneNumber: shopInfo.phone })
+  }
+
+  getOrderDetail = async () => {
+    const query = { id: this.id }
+
+    const {
+      data: { orderGoods: goodsList, order: info }
+    } = await api.order.GET_ORDER_DETAIL(query)
+
+    this.setState({ info, goodsList })
   }
 
   upLoadImg = async () => {
@@ -56,39 +100,65 @@ class OrderDetail extends Component {
     this.setState({ imgList })
   }
 
-  render() {
-    const { info, imgList } = this.state
+  get id() {
+    return this.route.params.id
+  }
 
-    // if (!info) return null
+  get route() {
+    return getCurrentInstance().router
+  }
+
+  render() {
+    const { info, goodsList, imgList } = this.state
+
+    if (!info) return null
+
+    const { actualPrice, orderStatus, orderSn, addTime, address, consignee, mobile } = info
 
     return (
       <View className='index'>
         <View className='header'>
           <View className='header-status'>
-            <Text className='header-status-text'>订单已完成</Text>
+            <Text className='header-status-text'>{this.handleStatus(orderStatus)}</Text>
             <Text>（记得好好吃饭鸭~）</Text>
           </View>
         </View>
         <View className='shop-container'>
-          <View className='shop-header'>
-            <Image src={t1} mode='aspectFill' className='shop-header__avatar'></Image>
-            <View className='shop-header__name'>光明鲜奶屋</View>
-            <View className='at-icon at-icon-chevron-right'></View>
-          </View>
+          {/* <View className='shop-header'>
+            <Image src={user.avatar} mode='aspectFill' className='shop-header__avatar'></Image>
+            <View className='shop-header__name'>{user.nickname}</View>
+          </View> */}
           <View className='shop-plate'>
-            <View className='shop-plate__item'>
-              <View className='shop-plate__item-title'>
-                <Text className='shop-plate__item-title__tag red-tag'>折</Text>
-                豆奶
-              </View>
-              <View className='shop-plate__item-price hava-num'>
-                <View className='shop-plate__item-num'>x1</View>
-                <View className='shop-plate__item-price__num'>
-                  <View className='shop-plate__item-price__line'>￥6</View>
-                  ￥5
-                </View>
-              </View>
-            </View>
+            {goodsList &&
+              goodsList.map((goods) => {
+                return (
+                  <View key={goods.id} className='shop-plate__item'>
+                    <View className='shop-plate__item-title'>
+                      {/* <Text className='shop-plate__item-title__tag red-tag'>折</Text> */}
+                      <Text className='shop-plate__item-title__name'>{goods.goodsName}</Text>
+                      {goods.specifications &&
+                        goods.specifications.map((val) => {
+                          return (
+                            <>
+                              {val != '默认' && (
+                                <Text key={val} className='shop-plate__item-title__spe'>
+                                  ({val})
+                                </Text>
+                              )}
+                            </>
+                          )
+                        })}
+                    </View>
+                    <View className='shop-plate__item-price hava-num'>
+                      <View className='shop-plate__item-num'>x{goods.number}</View>
+                      <View className='shop-plate__item-price__num'>
+                        {/* <View className='shop-plate__item-price__line'>￥6</View> */}￥
+                        {goods.price}
+                      </View>
+                    </View>
+                  </View>
+                )
+              })}
           </View>
           <View className='shop-plate'>
             <View className='shop-plate__item'>
@@ -105,28 +175,28 @@ class OrderDetail extends Component {
               </View>
               <View className='shop-plate__item-price'>￥5</View>
             </View>
-            <View className='shop-plate__item'>
+            {/* <View className='shop-plate__item'>
               <View className='shop-plate__item-title'>
                 <Text className='shop-plate__item-title__tag red-d-tag'>新客</Text>
                 新客费
               </View>
               <View className='shop-plate__item-price'>￥5</View>
-            </View>
-            <View className='shop-plate__item'>
+            </View> */}
+            {/* <View className='shop-plate__item'>
               <View className='shop-plate__item-title'>平台抵扣券</View>
               <View className='shop-plate__item-price'>￥5</View>
             </View>
             <View className='shop-plate__item'>
               <View className='shop-plate__item-title explain'>优惠券xxxx</View>
-            </View>
+            </View> */}
           </View>
           <View className='shop-plate'>
             <View className='shop-plate__item'>
-              <View className='shop-plate__item-title'>已为您节省￥11</View>
+              {/* <View className='shop-plate__item-title'>已为您节省￥11</View> */}
               <View className='shop-plate__item-price'>
                 <View className='shop-plate__item-price__num'>
                   总计
-                  <View className='red'>￥5</View>
+                  <View className='red'>￥{actualPrice}</View>
                 </View>
               </View>
             </View>
@@ -137,11 +207,11 @@ class OrderDetail extends Component {
           <View className='detail-option'>
             <View className='detail-option__item'>
               <View className='detail-option__item-title'>订单号</View>
-              <View>2021132121</View>
+              <View>{orderSn}</View>
             </View>
             <View className='detail-option__item'>
               <View className='detail-option__item-title'>期望送达时间</View>
-              <View>2021-05-11 07:00-07:30</View>
+              <View>{addTime}</View>
             </View>
             <View className='detail-option__item'>
               <View className='detail-option__item-title'>支付方式</View>
@@ -153,27 +223,19 @@ class OrderDetail extends Component {
             </View>
             <View className='detail-option__item'>
               <View className='detail-option__item-title'>收货人</View>
-              <View>收货人</View>
+              <View>{consignee}</View>
             </View>
             <View className='detail-option__item'>
               <View className='detail-option__item-title'>收货电话</View>
-              <View>13788954223</View>
+              <View>{mobile}</View>
             </View>
             <View className='detail-option__item'>
-              <View className='detail-option__item-title'>楼栋号</View>
-              <View>二期公寓3号楼</View>
-            </View>
-            <View className='detail-option__item'>
-              <View className='detail-option__item-title'>楼层</View>
-              <View>7</View>
-            </View>
-            <View className='detail-option__item'>
-              <View className='detail-option__item-title'>门牌号</View>
-              <View>713</View>
+              <View className='detail-option__item-title'>收货地址</View>
+              <View>{address}</View>
             </View>
             <View className='detail-option__item'>
               <View className='detail-option__item-title'>下单时间</View>
-              <View>2021-05-11 07:00-07:30</View>
+              <View>{addTime}</View>
             </View>
           </View>
         </View>
@@ -188,17 +250,17 @@ class OrderDetail extends Component {
                 return (
                   <View key={item} className='upload-box'>
                     <Image src={item} mode='aspectFill' className='upload-box-img'></Image>
-                    {/* <View className='at-icon at-icon-subtract' onClick={this.delImg(index)}></View> */}
+                    <View className='at-icon at-icon-subtract' onClick={this.delImg(index)}></View>
                   </View>
                 )
               })}
-            {/* {imgList.length < 3 && (
+            {imgList.length < 3 && (
               <View className='content-upload' onClick={this.upLoadImg}>
                 <Image src={UploadIcon} mode='aspectFill' className='content-upload-icon'></Image>
                 <Text>上传凭证</Text>
                 <Text>（最多3张）</Text>
               </View>
-            )} */}
+            )}
           </View>
         </View>
         <View className='content'>

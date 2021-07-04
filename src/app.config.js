@@ -13,8 +13,9 @@ export default {
     'pages/statistics/account/index',
     'pages/statistics/accountDetail/index',
     'pages/print/index/index',
-    // 'pages/print/setting/index',
-    // 'pages/print/batch/index',
+    'pages/print/setting/index',
+    'pages/print/batch/index',
+    'pages/print/list/index',
     // 'pages/manager/index',
     'pages/member/index',
     // 'pages/message/index',
@@ -24,7 +25,9 @@ export default {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#47CFCA',
     navigationBarTitleText: '吃饭鸭',
-    navigationBarTextStyle: 'white'
+    navigationBarTextStyle: 'white',
+    backgroundColor: '#47cfca'
+
   },
   tabBar: {
     selectedColor: '#47CFCA',

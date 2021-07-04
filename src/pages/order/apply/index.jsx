@@ -49,7 +49,7 @@ class OrderApply extends Component {
   }
 
   onJump = (id) => () => {
-    Taro.navigateTo({ url: `/pages/order/detail/index?id=${id}` })
+    Taro.navigateTo({ url: `/pages/manager/order/detail/index?id=${id}` })
   }
 
   handleClick = (index) => () => {

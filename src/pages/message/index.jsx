@@ -53,10 +53,6 @@ class Center extends Component {
     Taro.navigateTo({ url })
   }
 
-  onJumpToCoupon = () => {
-    Taro.navigateTo({ url: `/pages/coupon/list/index` })
-  }
-
   render() {
     const { menuList } = this.state
 

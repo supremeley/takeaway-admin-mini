@@ -15,6 +15,8 @@ import './index.scss'
 
 class Center extends Component {
   state = {
+    userInfo: { nickName: '', avatarUrl: '' },
+    isLogin: false,
     menuList: [
       {
         icon: CaiwuIcon,
@@ -31,20 +33,20 @@ class Center extends Component {
         title: '打印设置',
         url: '/pages/print/index/index'
       },
-      {
-        icon: OrderIcon,
-        title: '订单审核',
-        url: '/pages/order/apply/index'
-      },
+      // {
+      //   icon: OrderIcon,
+      //   title: '订单审核',
+      //   url: '/pages/order/apply/index'
+      // },
       // {
       //   icon: AreaIcon,
       //   title: '负责区域'
       // },
-      {
-        icon: MemberIcon,
-        title: '团队人员',
-        url: '/pages/member/index'
-      }
+      // {
+      //   icon: MemberIcon,
+      //   title: '团队人员',
+      //   url: '/pages/member/index'
+      // }
       // {
       //   icon: UsIcon,
       //   title: '消息'
@@ -52,8 +54,26 @@ class Center extends Component {
     ]
   }
 
+  componentDidShow() {
+    const userInfo = Taro.getStorageSync('userInfo')
+    // console.log(userInfo)
+    const isLogin = Object.keys(userInfo).length && userInfo.nickName && userInfo.avatarUrl
+
+    this.setState({ userInfo, isLogin })
+
+    // console.log(userInfo, isLogin)
+  }
+
   onJump = (url) => () => {
     Taro.navigateTo({ url })
+  }
+
+  onJumpToLogin = () => {
+    const { isLogin } = this.state
+
+    if (!isLogin) {
+      Taro.navigateTo({ url: `/pages/login/index` })
+    }
   }
 
   onJumpToCoupon = () => {
@@ -61,7 +81,9 @@ class Center extends Component {
   }
 
   render() {
-    const { menuList } = this.state
+    const { userInfo, isLogin, menuList } = this.state
+
+    const { nickName, avatarUrl } = userInfo
 
     return (
       <View className='index'>
@@ -70,11 +92,13 @@ class Center extends Component {
           <View className='header-container'>
             <View className='header-title'>我的</View>
             <View className='header-info'>
-              <View>
-                <View className='header-info__floor'>薛定谔的波波猫</View>
+              <View onClick={this.onJumpToLogin}>
+                <View className='header-info__floor'>{isLogin ? nickName : '请登录'}</View>
                 <View className='header-info__school'>今天也要记得吃饭鸭</View>
               </View>
-              <Image src={UsIcon} mode='aspectFill' className='header-info__avatar'></Image>
+              {avatarUrl && (
+                <Image src={avatarUrl} mode='aspectFill' className='header-info__avatar'></Image>
+              )}
             </View>
           </View>
         </View>
