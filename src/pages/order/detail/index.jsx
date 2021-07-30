@@ -2,7 +2,6 @@ import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Component } from 'react'
 import { View, Image, Text, Button, Textarea } from '@tarojs/components'
 
-import t1 from '@/assets/imgs/test1.png'
 import UploadIcon from '@/assets/imgs/upload-icon.png'
 
 import api from '@/api'

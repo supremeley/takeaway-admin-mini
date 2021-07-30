@@ -13,7 +13,7 @@ export default {
     'pages/statistics/account/index',
     'pages/statistics/accountDetail/index',
     'pages/print/index/index',
-    'pages/print/setting/index',
+    'pages/print/editor/index',
     'pages/print/batch/index',
     'pages/print/list/index',
     // 'pages/manager/index',

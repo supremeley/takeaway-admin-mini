@@ -4,6 +4,8 @@ export const APPLY_CASH_BY_SHOP = (data) => request.post('bill/apply', data, {
   type: 'shop'
 })
 
+export const APPLY_CASH_BY_MANANGE = (data) => request.post('user/applyWithdrawal', data)
+
 export const GET_SHOP_BILL = (data) => request.get('bill/overview', data, {
   type: 'shop'
 })

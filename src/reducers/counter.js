@@ -1,20 +1,15 @@
-import { ADD, MINUS } from "../constants/counter";
+import { SETECT_PRINT } from "../constants/counter";
 
 const INITIAL_STATE = {
-  num: 0,
+  print: null,
 };
 
 export default function counter(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case ADD:
+    case SETECT_PRINT:
       return {
         ...state,
-        num: state.num + 1,
-      };
-    case MINUS:
-      return {
-        ...state,
-        num: state.num - 1,
+        print: action.print,
       };
     default:
       return state;

@@ -1,13 +1,17 @@
-import Taro from '@tarojs/taro'
+import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Component } from 'react'
 import { View, Text, Input, Button } from '@tarojs/components'
 
 import api from '@/api'
 import D from '@/common'
+import { connect } from 'react-redux'
 
 import './index.scss'
 
-class PrintSetting extends Component {
+@connect(({ counter }) => ({
+  printInfo: counter.print
+}))
+class PrintEditor extends Component {
   state = {
     form: {
       sn: '',
@@ -15,12 +19,10 @@ class PrintSetting extends Component {
     }
   }
 
-  componentDidMount() {
-    this.getPrintList()
-  }
-
-  onJump = (url) => () => {
-    Taro.navigateTo({ url })
+  componentDidShow() {
+    if (this.props.printInfo) {
+      this.setState({ form: this.props.printInfo })
+    }
   }
 
   changeInp = (e, key) => {
@@ -30,13 +32,13 @@ class PrintSetting extends Component {
     form[key] = e.detail.value
   }
 
-  getPrintList = async () => {
-    const { data } = await api.print.GET_PRINT_LIST()
+  // getPrintList = async () => {
+  //   const { data } = await api.print.GET_PRINT_LIST()
 
-    if (data.length) {
-      this.setState({ form: data[0] })
-    }
-  }
+  //   if (data.length) {
+  //     this.setState({ form: data[0] })
+  //   }
+  // }
 
   onSubmit = async () => {
     const { form } = this.state
@@ -45,18 +47,39 @@ class PrintSetting extends Component {
       ...form
     }
 
-    const { data, no } = await api.print.ADD_PRINT_SETTING(query)
+    let resApi
 
-    if (no) {
-      D.toast(no[0])
+    if (this.props.printInfo) {
+      resApi = api.print.UPLOAD_PRINT_SETTING
+      delete query.addTime
+    } else {
+      resApi = api.print.ADD_PRINT_SETTING
     }
+
+    const {
+      data: { no }
+    } = await resApi(query)
+
+    if (no.length) {
+      D.toast(no[0])
+    } else {
+      Taro.navigateBack()
+    }
+  }
+
+  get id() {
+    return this.route.params.id
+  }
+
+  get route() {
+    return getCurrentInstance().router
   }
 
   render() {
     const { form } = this.state
 
     return (
-      <View className='index'>
+      <View className='print'>
         <View className='print-option'>
           <Text onInput={this.change} className='print-option__title'>
             打印机sn号
@@ -101,7 +124,6 @@ class PrintSetting extends Component {
             onInput={(e) => this.changeInp(e, 'remark')}
           />
         </View>
-
         <Button class='page-btn' onClick={this.onSubmit}>
           绑定打印机
         </Button>
@@ -110,4 +132,4 @@ class PrintSetting extends Component {
   }
 }
 
-export default PrintSetting
+export default PrintEditor

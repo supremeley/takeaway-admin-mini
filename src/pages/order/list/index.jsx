@@ -7,12 +7,17 @@ import BottomText from '@/components/bottomText'
 import api from '@/api'
 import D from '@/common'
 import withScrollPage from '@/hoc/scrollPage'
+import { connect } from 'react-redux'
 
 import PrintIcon from '@/assets/imgs/print-icon.png'
 
 import 'taro-ui/dist/style/components/icon.scss'
 import './index.scss'
 
+@connect(({ counter }) => ({
+  printInfo: counter.print
+}))
+@withScrollPage
 class OrderList extends Component {
   state = {
     current: 0,
@@ -29,7 +34,7 @@ class OrderList extends Component {
   componentDidShow() {
     this.resetPage(async () => {
       await this.nextPage()
-      await this.getPrintList()
+      // await this.getPrintList()
     })
   }
 
@@ -88,15 +93,20 @@ class OrderList extends Component {
   }
 
   printOrder = async (id) => {
-    const { printList } = this.state
+    const { printInfo } = this.props
 
-    if (!printList.length) {
-      D.toast('请先添加打印机')
+    if (!printInfo) {
+      D.toast('请选择打印机')
+
+      setTimeout(() => {
+        Taro.navigateTo({ url: '/pages/print/list/index?type=select' })
+      }, 1000)
+
       return
     }
 
-    const query = { orderId: id, sn: printList[0].sn }
-    // const query = { brandId: id, sn: 960802344 }
+    // const query = { orderId: id, sn: printList[0].sn }
+    const query = { orderId: id, sn: printInfo.sn }
 
     const { errno } = await api.print.FETCH_PRINT(query)
 
@@ -151,11 +161,11 @@ class OrderList extends Component {
     return { total }
   }
 
-  getPrintList = async () => {
-    const { data } = await api.print.GET_PRINT_LIST()
+  // getPrintList = async () => {
+  //   const { data } = await api.print.GET_PRINT_LIST()
 
-    this.setState({ printList: data })
-  }
+  //   this.setState({ printList: data })
+  // }
 
   render() {
     const { pageParams, total, current, navList, orderList } = this.state
@@ -283,4 +293,4 @@ class OrderList extends Component {
   }
 }
 
-export default withScrollPage(OrderList)
+export default OrderList

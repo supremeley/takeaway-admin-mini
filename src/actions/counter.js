@@ -1,24 +1,11 @@
 import {
-  ADD,
-  MINUS
+  SETECT_PRINT
 } from '../constants/counter'
 
-export const add = () => {
+export const selectPrint = (print) => {
   return {
-    type: ADD
-  }
-}
-export const minus = () => {
-  return {
-    type: MINUS
+    type: SETECT_PRINT,
+    print
   }
 }
 
-// 异步的action
-export function asyncAdd () {
-  return dispatch => {
-    setTimeout(() => {
-      dispatch(add())
-    }, 2000)
-  }
-}

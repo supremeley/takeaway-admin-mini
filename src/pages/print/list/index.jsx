@@ -1,23 +1,45 @@
-import Taro from '@tarojs/taro'
+import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Component } from 'react'
 import { View, Button } from '@tarojs/components'
 
 import api from '@/api'
-import D from '@/common'
+import { connect } from 'react-redux'
+import { selectPrint } from '@/actions/counter'
 
 import './index.scss'
 
-class Center extends Component {
+@connect(
+  ({ counter }) => ({
+    counter
+  }),
+  (dispatch) => ({
+    onSelectPrint: (info) => dispatch(selectPrint(info))
+  })
+)
+class PrintList extends Component {
   state = {
     printList: []
   }
 
-  componentDidMount() {
+  componentDidShow() {
     this.getPrintList()
   }
 
-  onJump = () => {
-    Taro.navigateTo({ url: '/pages/print/setting/index' })
+  onJumpToEditor = (info) => () => {
+    if (info !== 'empty') {
+      this.props.onSelectPrint(info)
+    } else {
+      this.props.onSelectPrint(null)
+    }
+
+    if (this.type === 'select') {
+      Taro.navigateBack()
+      return
+    }
+
+    let id = info === 'empty' ? info : info.id
+
+    Taro.navigateTo({ url: `/pages/print/editor/index?id=${id}` })
   }
 
   getPrintList = async () => {
@@ -28,15 +50,21 @@ class Center extends Component {
     }
   }
 
+  get type() {
+    const router = getCurrentInstance().router
+
+    return router.params.type
+  }
+
   render() {
     const { printList } = this.state
 
     return (
-      <View className='index'>
+      <View className='print'>
         {printList &&
           printList.map((item) => {
             return (
-              <View key={item.id} className='plate-option'>
+              <View key={item.id} className='plate-option' onClick={this.onJumpToEditor(item)}>
                 <View className='plate-option__title'>
                   <View className='plate-option__title-name'>{item.name}</View>
                   <View className='plate-option__title-sale'>sn：{item.sn}</View>
@@ -46,7 +74,7 @@ class Center extends Component {
             )
           })}
 
-        <Button className='page-btn' onClick={this.onJump}>
+        <Button className='page-btn' onClick={this.onJumpToEditor('empty')}>
           添加打印机
         </Button>
       </View>
@@ -54,4 +82,4 @@ class Center extends Component {
   }
 }
 
-export default Center
+export default PrintList

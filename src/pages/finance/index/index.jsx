@@ -63,7 +63,22 @@ class FinanceIndex extends Component {
       withdrawType: 1
     }
 
-    const { data, erron } = await api.finance.APPLY_CASH_BY_SHOP(query)
+    const userTypeDesc = Taro.getStorageSync('userTypeDesc')
+
+    let resultApi
+
+    switch (userTypeDesc) {
+      case 'shop': // 商户端
+        resultApi = api.finance.APPLY_CASH_BY_SHOP
+        // query.brandId = brandId
+        break
+      case 'manager':
+        resultApi = api.finance.APPLY_CASH_BY_MANANGE
+        // query.uId = userId
+        break
+    }
+
+    const { data, erron } = await resultApi(query)
 
     if (!erron) {
       D.toast('申请成功')

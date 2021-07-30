@@ -1,3 +1,4 @@
+
 .print-option {
   display: flex;
   align-items: center;
@@ -6,7 +7,7 @@
   background: #fff;
   padding: 0 30px;
   &:not(:last-child) {
-    border-bottom:2px solid $global-line-gray;
+    border-bottom: 2px solid $global-line-gray;
   }
 }
 .page-btn {
